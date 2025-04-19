@@ -51,7 +51,7 @@ Is this news likely to be fake or real? Explain briefly.
 
 # 🚀 Streamlit UI setup
 st.set_page_config(page_title="Fake News Verifier", layout="centered")
-st.title("📰 Fake News Verifier using RAG + Cohere")
+st.title("📰 Fake News Verifier")
 
 st.markdown("Enter a news headline or short story snippet to analyze its credibility.")
 user_news = st.text_area("📝 News Input", height=150)
