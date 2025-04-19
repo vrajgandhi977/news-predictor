@@ -1,3 +1,6 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = ""  # 🛡️ Disable GPU to prevent Streamlit Cloud errors
+
 import cohere
 import requests
 import faiss
@@ -5,11 +8,14 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 # ✅ Setup your keys
-COHERE_API_KEY = "DvaKcnKcvC6LpDmfey3ZmeK3DQ8KXV2TUYaNz7tp"  # 🔑 Replace this
-NEWS_API_KEY = "e240a31a6fa94a77a5e52be5da2dd0a0"       # 🔑 Replace this
+COHERE_API_KEY = "DvaKcnKcvC6LpDmfey3ZmeK3DQ8KXV2TUYaNz7tp"
+NEWS_API_KEY = "e240a31a6fa94a77a5e52be5da2dd0a0"
 
 co = cohere.Client(COHERE_API_KEY)
+
+# ✅ Load model and force CPU
 model = SentenceTransformer("all-MiniLM-L6-v2")
+model.to('cpu')  # ✅ Force use of CPU to avoid GPU crashes
 
 # ✅ Fetch latest news from trusted sources
 def fetch_news_articles():
