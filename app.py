@@ -8,7 +8,7 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-# 🔒 Setup API keys (can also be moved to st.secrets)
+# 🔒 Setup API keys
 COHERE_API_KEY = "DvaKcnKcvC6LpDmfey3ZmeK3DQ8KXV2TUYaNz7tp"
 NEWS_API_KEY = "e240a31a6fa94a77a5e52be5da2dd0a0"
 
@@ -24,7 +24,7 @@ def fetch_news_articles():
     articles = res.json().get("articles", [])
     return [a["title"] + ". " + (a.get("description") or "") for a in articles if a.get("title")]
 
-# 🔍 Perform RAG-style verification
+# 🔍 Perform RAG-style verification (context removed from display)
 def rag_check(user_input, corpus):
     corpus_embeddings = model.encode(corpus).astype("float32")
     index = faiss.IndexFlatL2(corpus_embeddings.shape[1])
@@ -47,11 +47,11 @@ Is this news likely to be fake or real? Explain briefly.
 """
 
     response = co.generate(prompt=prompt, model="command", max_tokens=120)
-    return response.generations[0].text.strip(), context
+    return response.generations[0].text.strip()
 
 # 🚀 Streamlit UI setup
 st.set_page_config(page_title="Fake News Verifier", layout="centered")
-st.title("📰 Fake News Verifier")
+st.title("📰 Fake News Verifier using RAG + Cohere")
 
 st.markdown("Enter a news headline or short story snippet to analyze its credibility.")
 user_news = st.text_area("📝 News Input", height=150)
@@ -62,14 +62,10 @@ if st.button("Verify News"):
     else:
         with st.spinner("Analyzing using RAG and Cohere..."):
             corpus = fetch_news_articles()
-            verdict, matched_context = rag_check(user_news, corpus)
+            verdict = rag_check(user_news, corpus)
 
         st.subheader("🤖 Verdict")
         st.success(verdict)
-
-        st.markdown("---")
-        st.subheader("📚 Context Used")
-        st.text(matched_context)
 
 st.markdown("---")
 st.caption("Built with Streamlit, Cohere, Sentence Transformers, FAISS, and NewsAPI")
